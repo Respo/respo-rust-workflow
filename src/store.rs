@@ -42,9 +42,6 @@ impl RespoAction for ActionOp {
 impl RespoStore for Store {
   type Action = ActionOp;
 
-  fn get_states(&self) -> RespoStatesTree {
-    self.states.to_owned()
-  }
   fn update(&mut self, op: Self::Action) -> Result<(), String> {
     match op {
       ActionOp::Noop => {
@@ -61,5 +58,19 @@ impl RespoStore for Store {
       }
     }
     Ok(())
+  }
+
+  fn to_string(&self) -> String {
+    serde_json::to_string(&self).expect("to json")
+  }
+
+  fn try_from_string(s: &str) -> Result<Self, String>
+  where
+    Self: Sized,
+  {
+    match serde_json::from_str(s) {
+      Ok(s) => Ok(s),
+      Err(e) => Err(format!("{:?}", e)),
+    }
   }
 }
