@@ -54,9 +54,6 @@ impl RespoStore for Store {
   where
     Self: Sized,
   {
-    match serde_json::from_str(s) {
-      Ok(s) => Ok(s),
-      Err(e) => Err(format!("{:?}", e)),
-    }
+    serde_json::from_str(s).map_err(|e| format!("{:?}", e))
   }
 }
