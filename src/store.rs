@@ -28,6 +28,10 @@ impl RespoAction for ActionOp {
 impl RespoStore for Store {
   type Action = ActionOp;
 
+  fn get_states(&mut self) -> &mut RespoStatesTree {
+    &mut self.states
+  }
+
   fn update(&mut self, op: Self::Action) -> Result<(), String> {
     match op {
       ActionOp::Noop => {
@@ -39,9 +43,7 @@ impl RespoStore for Store {
       ActionOp::Decrement => {
         self.counted -= 1;
       }
-      ActionOp::StatesChange(a) => {
-        self.states.set_in_mut(a);
-      }
+      ActionOp::StatesChange(a) => self.update_states(a),
     }
     Ok(())
   }
