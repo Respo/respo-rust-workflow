@@ -1,10 +1,7 @@
-use std::rc::Rc;
-
-use respo::{RespoAction, RespoStore};
+use respo::{states_tree::RespoUpdateState, RespoAction, RespoStore};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
-use respo::states_tree::{RespoStateBranch, RespoStatesTree};
+use respo::states_tree::RespoStatesTree;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Store {
@@ -12,39 +9,29 @@ pub struct Store {
   pub states: RespoStatesTree,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub enum ActionOp {
   Increment,
   Decrement,
   /// contains State and Value
-  StatesChange(Vec<Rc<str>>, Option<RespoStateBranch>, Option<Value>),
+  StatesChange(RespoUpdateState),
+  #[default]
   Noop,
 }
 
-/// TODO added to pass type checking, maybe we can remove it
-impl Default for ActionOp {
-  fn default() -> Self {
-    ActionOp::Noop
-  }
-}
-
 impl RespoAction for ActionOp {
-  fn wrap_states_action(cursor: &[Rc<str>], a: Option<RespoStateBranch>) -> Self {
-    // val is a backup value from DynEq to Json Value
-    let val = match &a {
-      None => None,
-      Some(v) => v.0.as_ref().backup(),
-    };
-    Self::StatesChange(cursor.to_vec(), a, val)
+  fn states_action(a: respo::states_tree::RespoUpdateState) -> Self {
+    Self::StatesChange(a)
   }
 }
 
 impl RespoStore for Store {
   type Action = ActionOp;
 
-  fn get_states(&self) -> RespoStatesTree {
-    self.states.to_owned()
+  fn get_states(&mut self) -> &mut RespoStatesTree {
+    &mut self.states
   }
+
   fn update(&mut self, op: Self::Action) -> Result<(), String> {
     match op {
       ActionOp::Noop => {
@@ -56,10 +43,19 @@ impl RespoStore for Store {
       ActionOp::Decrement => {
         self.counted -= 1;
       }
-      ActionOp::StatesChange(path, new_state, val) => {
-        self.states.set_in_mut(&path, new_state, val);
-      }
+      ActionOp::StatesChange(a) => self.update_states(a),
     }
     Ok(())
+  }
+
+  fn to_string(&self) -> String {
+    serde_json::to_string(&self).expect("to json")
+  }
+
+  fn try_from_string(s: &str) -> Result<Self, String>
+  where
+    Self: Sized,
+  {
+    serde_json::from_str(s).map_err(|e| format!("{:?}", e))
   }
 }

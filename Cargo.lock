@@ -174,9 +174,9 @@ dependencies = [
 
 [[package]]
 name = "respo"
-version = "0.1.0"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73e4941b92ed3d28d336d9d04ff3a41eb7a0426a5cc09f25769eda12f937ba91"
+checksum = "81da216e4d30bacdaf57c786696ca40f4d79cd95610d7a496d0550755d70e13d"
 dependencies = [
  "cirru_parser",
  "js-sys",
@@ -204,13 +204,11 @@ name = "rs-workflow"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
- "js-sys",
  "memoize",
  "respo",
  "respo_state_derive",
  "serde",
  "serde_json",
- "wasm-bindgen",
  "web-sys",
 ]
 
