@@ -174,9 +174,9 @@ dependencies = [
 
 [[package]]
 name = "respo"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81da216e4d30bacdaf57c786696ca40f4d79cd95610d7a496d0550755d70e13d"
+checksum = "29fe3d376db48cfeea1f53b3eb1440e4c81aec26d8f045fe369b2d36fcb5c44b"
 dependencies = [
  "cirru_parser",
  "js-sys",

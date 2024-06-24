@@ -3,7 +3,7 @@ extern crate console_error_panic_hook;
 mod counter;
 mod store;
 
-use std::cell::{Ref, RefCell, RefMut};
+use std::cell::{Ref, RefCell};
 use std::panic;
 use std::rc::Rc;
 
@@ -38,7 +38,8 @@ impl RespoApp for App {
     APP_STORE_KEY
   }
 
-  fn dispatch(store: &mut RefMut<Self::Model>, op: Self::Action) -> Result<(), String> {
+  fn dispatch(store_to_action: Rc<RefCell<Self::Model>>, op: Self::Action) -> Result<(), String> {
+    let mut store = store_to_action.borrow_mut();
     store.update(op)
   }
 
