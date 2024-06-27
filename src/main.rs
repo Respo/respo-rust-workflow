@@ -3,7 +3,7 @@ extern crate console_error_panic_hook;
 mod counter;
 mod store;
 
-use std::cell::{Ref, RefCell, RefMut};
+use std::cell::{Ref, RefCell};
 use std::panic;
 use std::rc::Rc;
 
@@ -26,7 +26,6 @@ struct App {
 
 impl RespoApp for App {
   type Model = Store;
-  type Action = ActionOp;
 
   fn get_store(&self) -> &Rc<RefCell<Self::Model>> {
     &self.store
@@ -38,11 +37,12 @@ impl RespoApp for App {
     APP_STORE_KEY
   }
 
-  fn dispatch(store: &mut RefMut<Self::Model>, op: Self::Action) -> Result<(), String> {
+  fn dispatch(store_to_action: Rc<RefCell<Self::Model>>, op: <Self::Model as RespoStore>::Action) -> Result<(), String> {
+    let mut store = store_to_action.borrow_mut();
     store.update(op)
   }
 
-  fn view(store: Ref<Self::Model>) -> Result<RespoNode<Self::Action>, String> {
+  fn view(store: Ref<Self::Model>) -> Result<RespoNode<<Self::Model as RespoStore>::Action>, String> {
     let states = &store.states;
     // util::log!("global store: {:?}", store);
 

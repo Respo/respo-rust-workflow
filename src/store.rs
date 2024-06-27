@@ -20,6 +20,8 @@ pub enum ActionOp {
 }
 
 impl RespoAction for ActionOp {
+  type Intent = ();
+
   fn states_action(a: respo::states_tree::RespoUpdateState) -> Self {
     Self::StatesChange(a)
   }
