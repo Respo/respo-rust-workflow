@@ -1,12 +1,16 @@
-use respo::{states_tree::RespoUpdateState, RespoAction, RespoStore};
+use respo::{states_tree::RespoUpdateState, util, RespoAction, RespoStore};
 use serde::{Deserialize, Serialize};
 
 use respo::states_tree::RespoStatesTree;
+
+use crate::router::AppRouterMatch;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Store {
   pub counted: i32,
   pub states: RespoStatesTree,
+  /// Router state - stores the current matched route
+  pub router: AppRouterMatch,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -15,6 +19,10 @@ pub enum ActionOp {
   Decrement,
   /// contains State and Value
   StatesChange(RespoUpdateState),
+  /// Route change action - navigates and pushes history state
+  RouteChange(AppRouterMatch),
+  /// Route restore action - from browser back/forward, skips pushState
+  RouteRestore(AppRouterMatch),
   #[default]
   Noop,
 }
@@ -46,6 +54,16 @@ impl RespoStore for Store {
         self.counted -= 1;
       }
       ActionOp::StatesChange(a) => self.update_states(a),
+      ActionOp::RouteChange(route) => {
+        util::log!("[store] RouteChange: {:?}", route);
+        self.router = route;
+      }
+      ActionOp::RouteRestore(route) => {
+        // Same as RouteChange but triggered by popstate
+        // The URL is already correct, no need to push history
+        util::log!("[store] RouteRestore: {:?}", route);
+        self.router = route;
+      }
     }
     Ok(())
   }
