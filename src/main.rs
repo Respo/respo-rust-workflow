@@ -152,7 +152,6 @@ fn comp_counter_route(
           div()
             .style(RespoStyle::default().margin(8.0))
             .elements([span().inner_text(format!("Page: {}", detail.query.page))]),
-          // Include the counter component
           comp_counter(&states.pick("counter"), counted)?,
         ]),
       )
@@ -170,7 +169,6 @@ fn comp_counter_route(
           div()
             .style(RespoStyle::default().margin(8.0))
             .elements([span().inner_text(format!("Page: {}", counter_module.query.page))]),
-          // Include the counter component
           comp_counter(&states.pick("counter"), counted)?,
         ]),
       )
@@ -180,7 +178,7 @@ fn comp_counter_route(
       attempted_patterns,
       closest_match,
     } => {
-      // Parse failed view
+      // Route parse failed - show error
       Ok(
         div().style(RespoStyle::default().padding(16.0)).elements([
           span()
@@ -202,20 +200,53 @@ fn comp_counter_route(
 }
 
 fn main() {
+  // Very first log - before anything else
+  web_sys::console::log_1(&"[main] ===== WASM ENTRY POINT =====".into());
+
   panic::set_hook(Box::new(console_error_panic_hook::hook));
 
-  // Get initial route from URL
+  web_sys::console::log_1(&"[main] panic hook set".into());
+
+  util::log!("[main] app starting...");
+
+  // Get initial route from URL FIRST - this takes priority over saved state
+  util::log!("[main] getting initial route from URL");
   let initial_route = get_current_route();
+  util::log!("[main] initial_route = {:?}", initial_route);
 
   let app = App {
     mount_target: query_select_node(".app").expect("mount target"),
-    store: Rc::new(RefCell::new(Store {
-      router: initial_route,
-      ..Store::default()
-    })),
+    store: Rc::new(RefCell::new(Store::default())),
   };
 
-  app.try_load_storage().expect("load storage");
+  // Try to load storage, but it may contain outdated router state
+  // Temporarily disabled for debugging
+  util::log!("[main] app created, trying to load storage");
+  // Clear storage first to avoid stale data issues during development
+  if let Some(window) = web_sys::window() {
+    if let Ok(Some(storage)) = window.local_storage() {
+      util::log!("[main] clearing old storage for clean state");
+      let _ = storage.remove_item(APP_STORE_KEY);
+    }
+  }
+  if let Err(e) = app.try_load_storage() {
+    util::log!("[main] load storage failed (this is OK for fresh start): {:?}", e);
+  }
+  util::log!("[main] storage loaded (if any), store = {:?}", app.store.borrow());
+
+  // IMPORTANT: Override stored router with URL-based route
+  // The URL should always be the source of truth for routing
+  {
+    let mut store = app.store.borrow_mut();
+    util::log!(
+      "[main] overriding stored router {:?} with URL route {:?}",
+      store.router,
+      initial_route
+    );
+    store.router = initial_route;
+  }
+  util::log!("[main] after router override, store = {:?}", app.store.borrow());
+
   app.backup_model_beforeunload().expect("backup model");
 
   // Setup popstate listener for browser back/forward navigation
@@ -232,7 +263,7 @@ fn main() {
     });
   }
 
-  util::log!("store: {:?}", app.store.as_ref());
+  util::log!("[main] starting render_loop, final store = {:?}", app.store.borrow());
 
   app.render_loop().expect("app render");
 }

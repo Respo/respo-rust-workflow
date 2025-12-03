@@ -69,13 +69,25 @@ impl RespoStore for Store {
   }
 
   fn to_string(&self) -> String {
-    serde_json::to_string(&self).expect("to json")
+    let result = serde_json::to_string(&self).expect("to json");
+    util::log!("[store] to_string: {}", &result);
+    result
   }
 
   fn try_from_string(s: &str) -> Result<Self, String>
   where
     Self: Sized,
   {
-    serde_json::from_str(s).map_err(|e| format!("{:?}", e))
+    util::log!("[store] try_from_string input: {}", s);
+    match serde_json::from_str(s) {
+      Ok(store) => {
+        util::log!("[store] try_from_string success: {:?}", store);
+        Ok(store)
+      }
+      Err(e) => {
+        util::log!("[store] try_from_string ERROR: {:?}", e);
+        Err(format!("{:?}", e))
+      }
+    }
   }
 }

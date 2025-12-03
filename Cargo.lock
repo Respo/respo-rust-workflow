@@ -220,18 +220,18 @@ dependencies = [
 
 [[package]]
 name = "ruled-router"
-version = "0.0.5"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "586ac7b29acea7b87fec4f9eb98347f78bca85009ced23504df8b9fb614c4265"
+checksum = "c043ba749299a8e92fae327291580184de742d611fe821daf7808e128f6bcccf"
 dependencies = [
  "ruled-router-derive",
 ]
 
 [[package]]
 name = "ruled-router-derive"
-version = "0.0.5"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3140354ae7563869d463d91fe876520b5124bbfa2619900b8d712748185bf51"
+checksum = "9f31cd795607a88237a33d64c30bdcc34bc2b74c979b4738c95a48e7db652f47"
 dependencies = [
  "proc-macro2",
  "quote",

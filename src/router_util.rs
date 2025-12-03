@@ -60,13 +60,21 @@ pub fn replace_history_state(path: &str) {
 
 /// Get current route from browser URL
 pub fn get_current_route() -> AppRouterMatch {
+  util::log!("[router] get_current_route: starting");
   if let Some(window) = web_sys::window() {
+    util::log!("[router] get_current_route: got window");
     if let Ok(pathname) = window.location().pathname() {
+      util::log!("[router] get_current_route: pathname = {}", pathname);
       let search = window.location().search().unwrap_or_default();
+      util::log!("[router] get_current_route: search = {}", search);
       let full_path = format!("{pathname}{search}");
       util::log!("[router] get_current_route: full_path = {}", full_path);
       return parse_route(&full_path);
+    } else {
+      util::log!("[router] get_current_route: failed to get pathname");
     }
+  } else {
+    util::log!("[router] get_current_route: no window");
   }
   util::log!("[router] get_current_route: using default");
   AppRouterMatch::default()

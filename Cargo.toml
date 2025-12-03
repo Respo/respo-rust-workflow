@@ -13,8 +13,8 @@ respo_state_derive = "0.0.1"
 console_error_panic_hook = "0.1.7"
 # js-sys = "0.3.69"
 memoize = "0.4.2"
-ruled-router = "0.0.5"
-ruled-router-derive = "0.0.5"
+ruled-router = "0.0.6"
+ruled-router-derive = "0.0.6"
 
 
 [dependencies.web-sys]
