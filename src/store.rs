@@ -1,27 +1,29 @@
-use respo::{states_tree::RespoUpdateState, util, RespoAction, RespoStore};
-use serde::{Deserialize, Serialize};
+//! Application state management
 
-use respo::states_tree::RespoStatesTree;
+use respo::states_tree::{RespoStatesTree, RespoUpdateState};
+use respo::{RespoAction, RespoStore};
+use serde::{Deserialize, Serialize};
 
 use crate::router::AppRouterMatch;
 
+/// Application store - single source of truth
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Store {
   pub counted: i32,
   pub states: RespoStatesTree,
-  /// Router state - stores the current matched route
+  /// Current matched route
   pub router: AppRouterMatch,
 }
 
+/// Application actions
 #[derive(Clone, Debug, Default)]
 pub enum ActionOp {
   Increment,
   Decrement,
-  /// contains State and Value
   StatesChange(RespoUpdateState),
-  /// Route change action - navigates and pushes history state
+  /// Route change - navigates and pushes history state
   RouteChange(AppRouterMatch),
-  /// Route restore action - from browser back/forward, skips pushState
+  /// Route restore - from browser back/forward, skips pushState
   RouteRestore(AppRouterMatch),
   #[default]
   Noop,
@@ -30,7 +32,7 @@ pub enum ActionOp {
 impl RespoAction for ActionOp {
   type Intent = ();
 
-  fn states_action(a: respo::states_tree::RespoUpdateState) -> Self {
+  fn states_action(a: RespoUpdateState) -> Self {
     Self::StatesChange(a)
   }
 }
@@ -44,24 +46,11 @@ impl RespoStore for Store {
 
   fn update(&mut self, op: Self::Action) -> Result<(), String> {
     match op {
-      ActionOp::Noop => {
-        // nothing to to
-      }
-      ActionOp::Increment => {
-        self.counted += 1;
-      }
-      ActionOp::Decrement => {
-        self.counted -= 1;
-      }
+      ActionOp::Noop => {}
+      ActionOp::Increment => self.counted += 1,
+      ActionOp::Decrement => self.counted -= 1,
       ActionOp::StatesChange(a) => self.update_states(a),
-      ActionOp::RouteChange(route) => {
-        util::log!("[store] RouteChange: {:?}", route);
-        self.router = route;
-      }
-      ActionOp::RouteRestore(route) => {
-        // Same as RouteChange but triggered by popstate
-        // The URL is already correct, no need to push history
-        util::log!("[store] RouteRestore: {:?}", route);
+      ActionOp::RouteChange(route) | ActionOp::RouteRestore(route) => {
         self.router = route;
       }
     }
@@ -69,25 +58,13 @@ impl RespoStore for Store {
   }
 
   fn to_string(&self) -> String {
-    let result = serde_json::to_string(&self).expect("to json");
-    util::log!("[store] to_string: {}", &result);
-    result
+    serde_json::to_string(&self).expect("to json")
   }
 
   fn try_from_string(s: &str) -> Result<Self, String>
   where
     Self: Sized,
   {
-    util::log!("[store] try_from_string input: {}", s);
-    match serde_json::from_str(s) {
-      Ok(store) => {
-        util::log!("[store] try_from_string success: {:?}", store);
-        Ok(store)
-      }
-      Err(e) => {
-        util::log!("[store] try_from_string ERROR: {:?}", e);
-        Err(format!("{:?}", e))
-      }
-    }
+    serde_json::from_str(s).map_err(|e| format!("{e:?}"))
   }
 }
