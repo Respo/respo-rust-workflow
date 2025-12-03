@@ -227,6 +227,8 @@ fn main() {
       let mut store = store.borrow_mut();
       let result = store.update(ActionOp::RouteRestore(route));
       util::log!("[main] popstate callback: store.update result = {:?}", result);
+      // Request rerender after store update
+      respo::request_rerender();
     });
   }
 
