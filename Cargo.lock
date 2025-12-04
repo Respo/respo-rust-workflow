@@ -130,9 +130,9 @@ checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
 
 [[package]]
 name = "memoize"
-version = "0.4.2"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5df4051db13d0816cf23196d3baa216385ae099339f5d0645a8d9ff2305e82b8"
+checksum = "f8d1d5792299bab3f8b5d88d1b7a7cb50ad7ef039a8c4d45a6b84880a6526276"
 dependencies = [
  "lazy_static",
  "lru",
@@ -141,9 +141,9 @@ dependencies = [
 
 [[package]]
 name = "memoize-inner"
-version = "0.4.3"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27bdece7e91f0d1e33df7b46ec187a93ea0d4e642113a1039ac8bfdd4a3273ac"
+checksum = "6dd8f89255d8ff313afabed9a3c83ef0993cc056679dfd001f5111a026f876f7"
 dependencies = [
  "lazy_static",
  "proc-macro2",
@@ -220,18 +220,18 @@ dependencies = [
 
 [[package]]
 name = "ruled-router"
-version = "0.0.6"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c043ba749299a8e92fae327291580184de742d611fe821daf7808e128f6bcccf"
+checksum = "9707a79f20a3d470df4563df379c359397004d8d6f6eee6522c150059503a230"
 dependencies = [
  "ruled-router-derive",
 ]
 
 [[package]]
 name = "ruled-router-derive"
-version = "0.0.6"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f31cd795607a88237a33d64c30bdcc34bc2b74c979b4738c95a48e7db652f47"
+checksum = "8defadee934403943198ee6e5a468ac68a0b49a7c14e159da41381dbe0832101"
 dependencies = [
  "proc-macro2",
  "quote",

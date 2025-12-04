@@ -12,14 +12,11 @@ respo_state_derive = "0.0.1"
 # wasm-bindgen = "0.2.92"
 console_error_panic_hook = "0.1.7"
 # js-sys = "0.3.69"
-memoize = "0.4.2"
-ruled-router = "0.0.6"
-ruled-router-derive = "0.0.6"
-
-
-[dependencies.web-sys]
-version = "0.3.69"
-features = [
+memoize = "0.5.1"
+ruled-router = "0.0.7"
+ruled-router-derive = "0.0.7"
+wasm-bindgen = "0.2.92"
+web-sys = { version = "0.3.69", features = [
   "console",
   "Document",
   "HtmlHeadElement",
@@ -32,7 +29,6 @@ features = [
   "InputEvent",
   "Node",
   "NodeList",
-  "Element",
   "HtmlCollection",
   "CssStyleDeclaration",
   "FocusEvent",
@@ -41,8 +37,5 @@ features = [
   "Storage",
   "History",
   "Location",
-  "PopStateEvent"
-]
-
-[dependencies.wasm-bindgen]
-version = "0.2.92"
+  "PopStateEvent",
+] }
