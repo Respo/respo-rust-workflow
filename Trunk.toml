@@ -1,3 +1,14 @@
 
 [build]
-public_url = "./"
+# Use absolute path for SPA routing to work correctly
+# Relative path "./" breaks when accessing deep routes like /counter/42
+public_url = "/"
+
+[serve]
+# Fallback to index.html for SPA routing
+# All unknown routes will load index.html
+open = false
+
+[watch]
+# Watch settings
+ignore = []

@@ -1,20 +1,30 @@
-use respo::{states_tree::RespoUpdateState, RespoAction, RespoStore};
+//! Application state management
+
+use respo::states_tree::{RespoStatesTree, RespoUpdateState};
+use respo::{RespoAction, RespoStore};
 use serde::{Deserialize, Serialize};
 
-use respo::states_tree::RespoStatesTree;
+use crate::router::AppRouterMatch;
 
+/// Application store - single source of truth
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Store {
   pub counted: i32,
   pub states: RespoStatesTree,
+  /// Current matched route
+  pub router: AppRouterMatch,
 }
 
+/// Application actions
 #[derive(Clone, Debug, Default)]
 pub enum ActionOp {
   Increment,
   Decrement,
-  /// contains State and Value
   StatesChange(RespoUpdateState),
+  /// Route change - navigates and pushes history state
+  RouteChange(AppRouterMatch),
+  /// Route restore - from browser back/forward, skips pushState
+  RouteRestore(AppRouterMatch),
   #[default]
   Noop,
 }
@@ -22,7 +32,7 @@ pub enum ActionOp {
 impl RespoAction for ActionOp {
   type Intent = ();
 
-  fn states_action(a: respo::states_tree::RespoUpdateState) -> Self {
+  fn states_action(a: RespoUpdateState) -> Self {
     Self::StatesChange(a)
   }
 }
@@ -36,16 +46,13 @@ impl RespoStore for Store {
 
   fn update(&mut self, op: Self::Action) -> Result<(), String> {
     match op {
-      ActionOp::Noop => {
-        // nothing to to
-      }
-      ActionOp::Increment => {
-        self.counted += 1;
-      }
-      ActionOp::Decrement => {
-        self.counted -= 1;
-      }
+      ActionOp::Noop => {}
+      ActionOp::Increment => self.counted += 1,
+      ActionOp::Decrement => self.counted -= 1,
       ActionOp::StatesChange(a) => self.update_states(a),
+      ActionOp::RouteChange(route) | ActionOp::RouteRestore(route) => {
+        self.router = route;
+      }
     }
     Ok(())
   }
@@ -58,6 +65,6 @@ impl RespoStore for Store {
   where
     Self: Sized,
   {
-    serde_json::from_str(s).map_err(|e| format!("{:?}", e))
+    serde_json::from_str(s).map_err(|e| format!("{e:?}"))
   }
 }

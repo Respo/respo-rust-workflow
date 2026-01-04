@@ -75,13 +75,13 @@ pub fn comp_counter(states: &RespoStatesTree, _counted: i32) -> Result<RespoElem
           .style(RespoStyle::default().margin(4.))
           .on_click(on_dec),
       ]),
-      div().elements([span().inner_text(format!("value is: {}", counted)).style(
+      div().elements([span().inner_text(format!("value is: {counted}")).style(
         RespoStyle::default()
           .color(CssColor::Hsluv(270, 100, 40))
           .font_family("Menlo".to_owned())
           .font_size(10. + counted as f32),
       )]),
-      div().elements([span().inner_text(format!("local state: {}", counted))]),
+      div().elements([span().inner_text(format!("local state: {counted}"))]),
     ]),
   )
 }
